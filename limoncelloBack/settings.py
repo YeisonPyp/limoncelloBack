@@ -1,20 +1,22 @@
 from pathlib import Path
 from datetime import timedelta
+import os  # Para manejar variables de entorno
+from dotenv import load_dotenv
+
+# Cargar las variables de entorno desde el archivo .env
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-r7hx!+8ft3ybj6u^qzqj)vq+3zem3-uhkd_@vct10s)n5(#*pe'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')  # Lista de hosts separados por comas
 
 
 # Application definition
@@ -76,11 +78,11 @@ WSGI_APPLICATION = 'limoncelloBack.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'limoncello_bookings',
-        'USER': 'limoncello_bookings_user',
-        'PASSWORD': '9OQl73vQ2t2pzhssdYa3Wh6Dgu8wFmf4',
-        'HOST': 'dpg-ct7q81t6l47c73caalk0-a.oregon-postgres.render.com',
-        'PORT': '5432',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
     }
 }
 
@@ -95,8 +97,8 @@ REST_FRAMEWORK = {
 
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=int(os.getenv('ACCESS_TOKEN_LIFETIME', '60'))),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=int(os.getenv('REFRESH_TOKEN_LIFETIME', '1'))),
     'USER_ID_FIELD': 'user_id',  # Cambiar de 'id' a 'user_id'
     'USER_ID_CLAIM': 'user_id',
 }
@@ -118,13 +120,12 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'mail.limoncello.com.co'
-EMAIL_PORT = 465
-EMAIL_USE_SSL = True  # Cambiar a True porque estás usando el puerto 465 con SSL
-EMAIL_USE_TLS = False  # Asegúrate de desactivar TLS
-EMAIL_HOST_USER = 'reservas@limoncello.com.co'
-EMAIL_HOST_PASSWORD = '5n0Z_fLr(MIr'
-
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT'))
+EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL', 'False') == 'True'
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'False') == 'True'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 
 # Internationalization
