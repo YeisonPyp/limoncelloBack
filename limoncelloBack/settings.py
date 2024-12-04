@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'holidays',
+    'storages',
     'corsheaders',
 
     'bookings',
@@ -44,6 +45,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'limoncelloBack.urls'
@@ -74,9 +77,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'limoncello_bookings',
-        'USER': 'postgres',
-        'PASSWORD': 'yp970417',
-        'HOST': 'localhost',
+        'USER': 'limoncello_bookings_user',
+        'PASSWORD': '9OQl73vQ2t2pzhssdYa3Wh6Dgu8wFmf4',
+        'HOST': 'dpg-ct7q81t6l47c73caalk0-a.oregon-postgres.render.com',
         'PORT': '5432',
     }
 }
@@ -124,7 +127,6 @@ EMAIL_HOST_PASSWORD = '5n0Z_fLr(MIr'
 
 
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -140,7 +142,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # Define la carpeta donde se recolectarán los archivos estáticos
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
