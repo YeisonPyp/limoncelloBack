@@ -42,7 +42,7 @@ def isFestivo(fecha):
     return fecha in colombian_holidays or (fecha + timedelta(days=1)) in colombian_holidays
 
 # Obtiene los horarios permitidos según la sede y fecha de reserva
-def obtener_horarios_permitidos(sede_id, fecha_reserva):
+def obtener_horarios_permitidos(sede_id, fecha_reserva, cantidad_personas):
     """
     Obtiene los horarios permitidos para una reserva en una sede y fecha específicas.
 
@@ -85,22 +85,19 @@ def obtener_horarios_permitidos(sede_id, fecha_reserva):
     fecha_hoy = datetime.now().strftime("%Y-%m-%d")
 
     if fecha_reserva == fecha_hoy:
-        # Hora actual más 15 minutos
-        hora_actual = (datetime.now() + timedelta(minutes=15)).time()
-
-        print(f"Hora actual: {hora_actual}")
-
+        hora_actual_aux = datetime.now().time()
+        hora_actual = (datetime.now() + timedelta(minutes=((30-(hora_actual_aux.minute % 15))))).time()            
+        
         for inicio, fin in rangos_horarios:
             hora_inicio = datetime.strptime(inicio, "%H:%M").time()
             hora_fin = datetime.strptime(fin, "%H:%M").time()
-
-            # Solo generar horarios si el rango es después de la hora actual
-            if hora_inicio >= hora_actual:
-                while hora_inicio < hora_fin:
-                    horarios.append(hora_inicio.strftime("%H:%M"))
-                    hora_inicio = (datetime.combine(datetime.today(), hora_inicio) + timedelta(minutes=15)).time()
+            if hora_inicio <= hora_actual:
+                hora_inicio = hora_actual
+                
+            while hora_inicio < hora_fin:
+                horarios.append(hora_inicio.strftime("%H:%M"))
+                hora_inicio = (datetime.combine(datetime.today(), hora_inicio) + timedelta(minutes=15)).time()
     else:
-        # Generar horarios normalmente para cualquier otra fecha
         for inicio, fin in rangos_horarios:
             hora_inicio = datetime.strptime(inicio, "%H:%M").time()
             hora_fin = datetime.strptime(fin, "%H:%M").time()
@@ -108,7 +105,13 @@ def obtener_horarios_permitidos(sede_id, fecha_reserva):
                 horarios.append(hora_inicio.strftime("%H:%M"))
                 hora_inicio = (datetime.combine(datetime.today(), hora_inicio) + timedelta(minutes=15)).time()
 
-    return horarios
+    horarios_permitidos = []
+    for horario in horarios:
+        validador = validar_cantidad_personas(int(cantidad_personas), fecha_reserva, horario)
+        if validador:
+            horarios_permitidos.append(horario)
+        
+    return horarios_permitidos
 
 
 def convert_to_am_pm(hora):
@@ -121,7 +124,7 @@ def convert_to_24(hora):
 # Valida la cantidad de personas permitidas
 def validar_cantidad_personas(cantidad_personas, fecha_reserva, hora_reserva):
     """
-    Valida que no haya más de 30 personas en el rango de 105 minutos
+    Valida que no haya más de 30 personas en el rango de 89 minutos
     alrededor de la combinación de fecha y hora de reserva.
     
     :param cantidad_personas: Número de personas para la nueva reserva.
@@ -139,16 +142,15 @@ def validar_cantidad_personas(cantidad_personas, fecha_reserva, hora_reserva):
         raise ValueError("La fecha y la hora deben estar en los formatos 'YYYY-MM-DD' y 'HH:MM'.")
     
     # Calcular el rango de tiempo de 105 minutos antes y después
-    inicio_rango = fecha_hora_reserva - timedelta(minutes=105)
-    fin_rango = fecha_hora_reserva + timedelta(minutes=105)
+    inicio_rango = fecha_hora_reserva - timedelta(minutes=89)
+    fin_rango = fecha_hora_reserva + timedelta(minutes=89)
     
     # Filtrar reservas activas dentro del rango de tiempo
-    reservas_en_rango = Booking.objects.filter(
-        active=True,
+    reservas_en_rango = Booking.objects.filter(active=True,
         booking_date__range=(inicio_rango.date(), fin_rango.date()),
         booking_hour__range=(inicio_rango.time(), fin_rango.time())
-    ).aggregate(total_personas=Sum('people_amount'))['total_personas'] or 0
-    
+    ).aggregate(Sum("people_amount"))["people_amount__sum"] or 0
+   
     # Verificar si al agregar las nuevas personas se supera el límite de 30
     if reservas_en_rango + cantidad_personas > 30:
         return False
@@ -250,7 +252,8 @@ def enviar_correo_confirmacion_reserva_sede(correo_destinatario, sede_reserva, n
     """
     
     estado_reserva_upper = str(estado_reserva).upper()
-    
+    submanager_email = 'ymra777@hotmail.com'
+
     
     
     mensaje_html = f"""
@@ -310,7 +313,7 @@ def enviar_correo_confirmacion_reserva_sede(correo_destinatario, sede_reserva, n
         asunto,
         mensaje_html,
         'reservas@limoncello.com.co',
-        [correo_destinatario],
+        [correo_destinatario, submanager_email],
     )
     email.content_subtype = "html"  # Define el contenido como HTML
     try:

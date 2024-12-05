@@ -43,6 +43,7 @@ class BookingHourList(generics.ListAPIView):
         data = request.query_params
         campus_id = data.get('campus_id')
         booking_date = data.get('booking_date')
+        people_amount = data.get('people_amount')
 
         if not campus_id or not booking_date: 
             raise ValidationError('Missing required fields')
@@ -51,7 +52,7 @@ class BookingHourList(generics.ListAPIView):
             raise NotFound('Campus not found')
         
         campus = Campus.objects.get(campus_id=campus_id)
-        hours_list = utils.obtener_horarios_permitidos(campus.campus_id, booking_date)
+        hours_list = utils.obtener_horarios_permitidos(campus.campus_id, booking_date, people_amount)
         hours_list = [utils.convert_to_am_pm(hour) for hour in hours_list]
 
         
@@ -143,11 +144,6 @@ class BookingCreate(generics.ListCreateAPIView):
             'active': True,
             'approved': False
         }
-
-        validar_cantidad= utils.validar_cantidad_personas(people_amount, booking_date, utils.convert_to_24(booking_hour))
-
-        if not validar_cantidad:
-            raise ValidationError('Exceeded number of people allowed')
 
         self.validate_booking(booking_data)
 

@@ -132,13 +132,13 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-co'  # Idioma español de Colombia
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Bogota'  # Zona horaria de Bogotá, Colombia
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = True  # Django manejará la zona horaria configurada aquí
 
 
 # Static files (CSS, JavaScript, Images)
