@@ -160,7 +160,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = False  # Desactiva el acceso de todos los orígenes
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",       # Desarrollo local
+    "http://localhost:5173",       # Desarrollo local
     "https://limoncellofront.onrender.com",  # Dominio del frontend en producción
 ]
 
