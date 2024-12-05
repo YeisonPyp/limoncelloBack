@@ -162,7 +162,7 @@ CORS_ALLOW_ALL_ORIGINS = False  # Desactiva el acceso de todos los orígenes
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",       # Desarrollo local
     "https://limoncellofront.onrender.com",  # Dominio del frontend en producción
-    "https://limoncello-reserva.netlify.app/",
+    "https://limoncello-reserva.netlify.app",  # Dominio del frontend en producción
 ]
 
 CORS_ALLOW_CREDENTIALS = True  # Si necesitas cookies o autenticación basada en tokens
