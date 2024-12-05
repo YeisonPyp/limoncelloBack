@@ -155,5 +155,27 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'  # Define la carpeta donde se recolectar�
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
+
 # CORS settings
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = False  # Desactiva el acceso de todos los orígenes
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",       # Desarrollo local
+    "https://limoncellofront.onrender.com",  # Dominio del frontend en producción
+]
+
+CORS_ALLOW_CREDENTIALS = True  # Si necesitas cookies o autenticación basada en tokens
+
+CORS_ALLOW_HEADERS = [
+    "content-type",
+    "authorization",
+    "x-csrftoken",
+]
+
+CORS_ALLOW_METHODS = [
+    "GET",
+    "POST",
+    "PUT",
+    "DELETE",
+    "OPTIONS",
+]
