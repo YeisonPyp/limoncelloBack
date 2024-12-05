@@ -88,6 +88,8 @@ def obtener_horarios_permitidos(sede_id, fecha_reserva):
         # Hora actual más 15 minutos
         hora_actual = (datetime.now() + timedelta(minutes=15)).time()
 
+        print(f"Hora actual: {hora_actual}")
+
         for inicio, fin in rangos_horarios:
             hora_inicio = datetime.strptime(inicio, "%H:%M").time()
             hora_fin = datetime.strptime(fin, "%H:%M").time()
@@ -228,7 +230,6 @@ def enviar_correo_confirmacion_reserva(correo_destinatario, nombre_destinatario,
     email.content_subtype = "html"  # Define el contenido como HTML
     try:
         email.send()
-        print("Correo enviado con éxito.")
         return True
     except Exception as e:
         print(f"Error al enviar el correo: {e}")
@@ -249,6 +250,7 @@ def enviar_correo_confirmacion_reserva_sede(correo_destinatario, sede_reserva, n
     """
     
     estado_reserva_upper = str(estado_reserva).upper()
+    
     
     
     mensaje_html = f"""
@@ -313,7 +315,6 @@ def enviar_correo_confirmacion_reserva_sede(correo_destinatario, sede_reserva, n
     email.content_subtype = "html"  # Define el contenido como HTML
     try:
         email.send()
-        print("Correo enviado con éxito.")
         return True
     except Exception as e:
         print(f"Error al enviar el correo: {e}")
@@ -378,7 +379,6 @@ def enviar_correo_recuperacion_contraseña(correo_destinatario, username, new_pa
 
     try:
         email.send()
-        print("Correo de recuperación enviado con éxito.")
         return True
     except Exception as e:
         print(f"Error al enviar el correo: {e}")
@@ -448,7 +448,6 @@ def enviar_correo_confirmacion_creacion_usuario(correo_destinatario, nombre_dest
 
     try:
         email.send()
-        print("Correo de confirmación de creación de usuario enviado con éxito.")
         return True
     except Exception as e:
         print(f"Error al enviar el correo: {e}")
