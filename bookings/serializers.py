@@ -64,11 +64,10 @@ class BookingByIdSerializer(serializers.ModelSerializer):
         return full_name
     
     def get_state(self, obj):
-        if obj.active and obj.approved:
+        if obj.approved and not obj.active:
             state = 'GESTIONADA'
         elif obj.active and not obj.approved:
             state = 'PENDIENTE'
         else:
             state = 'CANCELADA'
         return state
-

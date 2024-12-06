@@ -163,19 +163,20 @@ class BookingList(generics.ListAPIView):
     queryset = Booking.objects.all()
     serializer_class = BookingListSerializer
 
-    def get(self, request):
-        data = request.query_params
-        campus_id = data.get('campus_id')
-        booking_date = data.get('booking_date')
+    def get(self, request, campus_id):  
 
-        if not campus_id or not booking_date:
-            raise ValidationError('Missing required fields')
-        
-        if not Campus.objects.filter(campus_id=campus_id).exists():
+        booking_date = datetime.now().strftime('%Y-%m-%d')
+        try:
+            campus = Campus.objects.get(campus_id=campus_id)
+        except Campus.DoesNotExist:
             raise NotFound('Campus not found')
         
         campus = Campus.objects.get(campus_id=campus_id)
-        bookings = Booking.objects.filter(campus_id=campus.campus_id, booking_date=booking_date).order_by('booking_hour')
+
+        # bookings = Booking.objects.filter(campus_id=campus.campus_id, booking_date=booking_date).order_by('booking_hour')
+
+        bookings = Booking.objects.filter(campus_id=campus.campus_id, booking_date__gte=booking_date).order_by('booking_date', 'booking_hour')
+
         serializer = self.serializer_class(bookings, many=True)
         return Response({'success': True, 'message': 'Booking List', 'data': serializer.data}, status=status.HTTP_200_OK)
         
