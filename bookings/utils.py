@@ -16,10 +16,8 @@ HORARIOS_SEDES = {
         "weekdays": [("12:00", "13:16"), ("19:00", "20:16")],  # Lunes a Jueves
         "friday_saturday": [("12:00", "13:46"), ("19:00", "20:16")],  # Viernes y Sábado
         "sunday": [("11:00", "15:46")],  # Domingos
-        "holiday_weekends": {
-            "sunday": [("12:00", "15:31"), ("19:00", "20:16")],
-            "holiday": [("11:00", "15:46")],
-        },
+        "holiday": [("11:00", "15:46")], # Festivos
+        "holiday_sunday": [("12:00", "15:31"), ("19:00", "20:16")],
     },
 }
 
@@ -39,7 +37,14 @@ def isFestivo(fecha):
         fecha = datetime.strptime(fecha, "%Y-%m-%d").date()
     except ValueError:
         raise ValueError("El formato de fecha debe ser YYYY-MM-DD.")
-    return fecha in colombian_holidays or (fecha + timedelta(days=1)) in colombian_holidays
+    return fecha in colombian_holidays
+
+def isFestivoDonmingo(fecha):
+    try:
+        fecha = datetime.strptime(fecha, "%Y-%m-%d").date()
+    except ValueError:
+        raise ValueError("El formato de fecha debe ser YYYY-MM-DD.")
+    return (fecha + timedelta(days=1)) in colombian_holidays
 
 # Obtiene los horarios permitidos según la sede y fecha de reserva
 def obtener_horarios_permitidos(sede_id, fecha_reserva, cantidad_personas):
@@ -56,6 +61,7 @@ def obtener_horarios_permitidos(sede_id, fecha_reserva, cantidad_personas):
         raise ValueError("La fecha de reserva debe ser una cadena en formato YYYY-MM-DD.")
     
     es_festivo = isFestivo(fecha_reserva)
+    es_festivo_domingo = isFestivoDonmingo(fecha_reserva)
     dia_semana = datetime.strptime(fecha_reserva, "%Y-%m-%d").weekday()
     dia_nombre = DAYS_OF_WEEK[dia_semana]
 
@@ -68,12 +74,10 @@ def obtener_horarios_permitidos(sede_id, fecha_reserva, cantidad_personas):
     if sede_id == 1:
         rangos_horarios = config_sede["default"]
     elif sede_id == 2:
-
-        if es_festivo and dia_semana in [0, 5, 6]:  # Fines de semana festivos
-            if dia_nombre == "sunday":
-                rangos_horarios = config_sede["holiday_weekends"]["sunday"]
-            else:
-                rangos_horarios = config_sede["holiday_weekends"]["holiday"]
+        if es_festivo:
+            rangos_horarios = config_sede["holiday"]
+        elif es_festivo_domingo and dia_nombre == "sunday":
+            rangos_horarios = config_sede["holiday_sunday"]
         elif dia_nombre in ["monday", "tuesday", "wednesday", "thursday"]:
             rangos_horarios = config_sede["weekdays"]
         elif dia_nombre in ["friday", "saturday"]:
@@ -91,9 +95,10 @@ def obtener_horarios_permitidos(sede_id, fecha_reserva, cantidad_personas):
         for inicio, fin in rangos_horarios:
             hora_inicio = datetime.strptime(inicio, "%H:%M").time()
             hora_fin = datetime.strptime(fin, "%H:%M").time()
+            
             if hora_inicio <= hora_actual:
                 hora_inicio = hora_actual
-                
+
             while hora_inicio < hora_fin:
                 horarios.append(hora_inicio.strftime("%H:%M"))
                 hora_inicio = (datetime.combine(datetime.today(), hora_inicio) + timedelta(minutes=15)).time()
@@ -105,9 +110,10 @@ def obtener_horarios_permitidos(sede_id, fecha_reserva, cantidad_personas):
                 horarios.append(hora_inicio.strftime("%H:%M"))
                 hora_inicio = (datetime.combine(datetime.today(), hora_inicio) + timedelta(minutes=15)).time()
 
+ 
     horarios_permitidos = []
     for horario in horarios:
-        validador = validar_cantidad_personas(int(cantidad_personas), fecha_reserva, horario)
+        validador = validar_cantidad_personas(int(cantidad_personas), fecha_reserva, horario, sede_id)
         if validador:
             horarios_permitidos.append(horario)
         
@@ -122,7 +128,7 @@ def convert_to_24(hora):
     return datetime.strptime(hora, "%I:%M %p").strftime("%H:%M")
 
 # Valida la cantidad de personas permitidas
-def validar_cantidad_personas(cantidad_personas, fecha_reserva, hora_reserva):
+def validar_cantidad_personas(cantidad_personas, fecha_reserva, hora_reserva, sede_id):
     """
     Valida que no haya más de 30 personas en el rango de 89 minutos
     alrededor de la combinación de fecha y hora de reserva.
@@ -147,10 +153,11 @@ def validar_cantidad_personas(cantidad_personas, fecha_reserva, hora_reserva):
     
     # Filtrar reservas activas dentro del rango de tiempo
     reservas_en_rango = Booking.objects.filter(active=True,
+        campus_id=sede_id,
         booking_date__range=(inicio_rango.date(), fin_rango.date()),
         booking_hour__range=(inicio_rango.time(), fin_rango.time())
     ).aggregate(Sum("people_amount"))["people_amount__sum"] or 0
-   
+
     # Verificar si al agregar las nuevas personas se supera el límite de 30
     if reservas_en_rango + cantidad_personas > 30:
         return False

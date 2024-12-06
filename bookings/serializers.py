@@ -29,10 +29,11 @@ class BookingSerializer(serializers.ModelSerializer):
 class BookingListSerializer(serializers.ModelSerializer):
     name_person = serializers.SerializerMethodField()
     state = serializers.SerializerMethodField()
+    phone_person = serializers.ReadOnlyField(source='person_id.phone_number')
 
     class Meta:
         model = Booking
-        fields = ['booking_id', 'campus_id', 'person_id', 'name_person', 'booking_date', 'booking_hour', 'people_amount', 'state']
+        fields = ['booking_id', 'campus_id', 'person_id', 'name_person', 'booking_date', 'booking_hour', 'phone_person', 'people_amount', 'state']
     
     def get_name_person(self, obj):
         person = People.objects.get(person_id=obj.person_id.person_id)
