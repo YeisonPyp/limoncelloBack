@@ -273,6 +273,7 @@ class LoginView(generics.GenericAPIView):
                 'username': user.username,
                 'role_id': role.role_id,
                 'campus_id': role.campus_id.campus_id,
+                'campus_name': role.campus_id.name,
                 'is_active': user.is_active,
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),

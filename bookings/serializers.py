@@ -56,7 +56,7 @@ class BookingByIdSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Booking
-        fields = ['booking_id', 'campus_id', 'person_id', 'name_person', 'phone_person', 'email_person', 'booking_date', 'booking_hour', 'people_amount', 'observations', 'state']
+        fields = ['booking_id', 'campus_id', 'person_id', 'name_person', 'phone_person', 'email_person', 'booking_date', 'booking_hour', 'people_amount', 'observations', 'creation_date', 'state']
     
     def get_name_person(self, obj):
         person = People.objects.get(person_id=obj.person_id.person_id)
