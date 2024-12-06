@@ -60,16 +60,27 @@ def obtener_horarios_permitidos(sede_id, fecha_reserva, cantidad_personas):
     if not isinstance(fecha_reserva, str):
         raise ValueError("La fecha de reserva debe ser una cadena en formato YYYY-MM-DD.")
     
+    
+        
+    
     es_festivo = isFestivo(fecha_reserva)
     es_festivo_domingo = isFestivoDonmingo(fecha_reserva)
     dia_semana = datetime.strptime(fecha_reserva, "%Y-%m-%d").weekday()
     dia_nombre = DAYS_OF_WEEK[dia_semana]
+    horarios = []
+    rangos_horarios = []
+    fecha_hoy = datetime.now().strftime("%Y-%m-%d")
+    horarios_permitidos = []
+
+    # Verificar si es 25 de diciembre y 1 de enero
+    year = datetime.strptime(fecha_reserva, "%Y-%m-%d").year
+    if fecha_reserva in [f"{year}-12-25", f"{year}-01-01"] and sede_id == 2:
+        return horarios_permitidos   
 
     if sede_id not in HORARIOS_SEDES:
         raise ValueError(f"La sede con ID {sede_id} no está configurada.")
 
     config_sede = HORARIOS_SEDES[sede_id]
-    rangos_horarios = []
 
     if sede_id == 1:
         rangos_horarios = config_sede["default"]
@@ -84,9 +95,6 @@ def obtener_horarios_permitidos(sede_id, fecha_reserva, cantidad_personas):
             rangos_horarios = config_sede["friday_saturday"]
         elif dia_nombre == "sunday":
             rangos_horarios = config_sede["sunday"]
-
-    horarios = []
-    fecha_hoy = datetime.now().strftime("%Y-%m-%d")
 
     if fecha_reserva == fecha_hoy:
         hora_actual_aux = datetime.now().time()
@@ -110,8 +118,6 @@ def obtener_horarios_permitidos(sede_id, fecha_reserva, cantidad_personas):
                 horarios.append(hora_inicio.strftime("%H:%M"))
                 hora_inicio = (datetime.combine(datetime.today(), hora_inicio) + timedelta(minutes=15)).time()
 
- 
-    horarios_permitidos = []
     for horario in horarios:
         validador = validar_cantidad_personas(int(cantidad_personas), fecha_reserva, horario, sede_id)
         if validador:
