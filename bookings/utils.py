@@ -74,7 +74,7 @@ def obtener_horarios_permitidos(sede_id, fecha_reserva, cantidad_personas):
 
     # Verificar si es 25 de diciembre y 1 de enero
     year = datetime.strptime(fecha_reserva, "%Y-%m-%d").year
-    if fecha_reserva in [f"{year}-12-25", f"{year}-01-01"] and sede_id == 2:
+    if fecha_reserva in [f"{year}-12-25", f"{year}-01-01"]:
         return horarios_permitidos   
 
     if sede_id not in HORARIOS_SEDES:
