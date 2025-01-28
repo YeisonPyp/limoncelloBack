@@ -10,14 +10,14 @@ colombian_holidays = holidays.Colombia()
 # Configuración de horarios
 HORARIOS_SEDES = {
     1: {
-        "default": [("12:00", "20:16")],  # Lunes a Domingo
+        "default": [("12:00", "20:01")],  # Lunes a Domingo
     },
     2: {
-        "weekdays": [("12:00", "13:16"), ("19:00", "20:16")],  # Lunes a Jueves
-        "friday_saturday": [("12:00", "13:46"), ("19:00", "20:16")],  # Viernes y Sábado
+        "weekdays": [("12:00", "13:16"), ("19:00", "20:01")],  # Lunes a Jueves
+        "friday_saturday": [("12:00", "13:46"), ("19:00", "20:01")],  # Viernes y Sábado
         "sunday": [("11:00", "15:46")],  # Domingos
         "holiday": [("11:00", "15:46")], # Festivos
-        "holiday_sunday": [("12:00", "15:31"), ("19:00", "20:16")],
+        "holiday_sunday": [("12:00", "15:31"), ("19:00", "20:01")],
     },
 }
 
