@@ -239,7 +239,7 @@ def enviar_correo_confirmacion_reserva(correo_destinatario, nombre_destinatario,
     email = EmailMessage(
         asunto,
         mensaje_html,
-        'reservas@limoncello.com.co',
+        'reserva@limoncello.com.co',
         [correo_destinatario],
     )
     email.content_subtype = "html"  # Define el contenido como HTML
@@ -325,7 +325,7 @@ def enviar_correo_confirmacion_reserva_sede(correo_destinatario, sede_reserva, n
     email = EmailMessage(
         asunto,
         mensaje_html,
-        'reservas@limoncello.com.co',
+        'reserva@limoncello.com.co',
         [correo_destinatario, submanager_email],
     )
     email.content_subtype = "html"  # Define el contenido como HTML
@@ -388,7 +388,7 @@ def enviar_correo_recuperacion_contraseña(correo_destinatario, username, new_pa
     email = EmailMessage(
         asunto,
         mensaje_html,
-        'reservas@limoncello.com.co',
+        'reserva@limoncello.com.co',
         [correo_destinatario],  # Destinatario(s)
     )
     email.content_subtype = "html"  # Define el contenido como HTML
@@ -457,7 +457,7 @@ def enviar_correo_confirmacion_creacion_usuario(correo_destinatario, nombre_dest
     email = EmailMessage(
         asunto,
         mensaje_html,
-        'reservas@limoncello.com.co',
+        'reserva@limoncello.com.co',
         [correo_destinatario],
     )
     email.content_subtype = "html"  # Define el contenido como HTML
