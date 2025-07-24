@@ -3,6 +3,7 @@ import holidays
 from bookings.models import Booking
 from django.core.mail import EmailMessage
 from django.db.models import Sum
+import os 
 
 # Instancia de festivos en Colombia (evitamos recrearla repetidamente)
 colombian_holidays = holidays.Colombia()
@@ -239,7 +240,7 @@ def enviar_correo_confirmacion_reserva(correo_destinatario, nombre_destinatario,
     email = EmailMessage(
         asunto,
         mensaje_html,
-        'reserva@limoncello.com.co',
+        os.getenv('EMAIL_HOST_USER'),
         [correo_destinatario],
     )
     email.content_subtype = "html"  # Define el contenido como HTML
@@ -325,7 +326,7 @@ def enviar_correo_confirmacion_reserva_sede(correo_destinatario, sede_reserva, n
     email = EmailMessage(
         asunto,
         mensaje_html,
-        'reserva@limoncello.com.co',
+        os.getenv('EMAIL_HOST_USER'),
         [correo_destinatario, submanager_email],
     )
     email.content_subtype = "html"  # Define el contenido como HTML
@@ -388,7 +389,7 @@ def enviar_correo_recuperacion_contraseña(correo_destinatario, username, new_pa
     email = EmailMessage(
         asunto,
         mensaje_html,
-        'reserva@limoncello.com.co',
+        os.getenv('EMAIL_HOST_USER'),
         [correo_destinatario],  # Destinatario(s)
     )
     email.content_subtype = "html"  # Define el contenido como HTML
@@ -457,7 +458,7 @@ def enviar_correo_confirmacion_creacion_usuario(correo_destinatario, nombre_dest
     email = EmailMessage(
         asunto,
         mensaje_html,
-        'reserva@limoncello.com.co',
+        os.getenv('EMAIL_HOST_USER'),
         [correo_destinatario],
     )
     email.content_subtype = "html"  # Define el contenido como HTML
