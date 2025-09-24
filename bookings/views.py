@@ -157,7 +157,7 @@ class BookingCreate(generics.ListCreateAPIView):
         
         
         return Response({'success': True, 'message': 'Booking created successfully', 'data': booking}, status=status.HTTP_201_CREATED)
-    
+
 
 class BookingList(generics.ListAPIView):
     queryset = Booking.objects.all()
@@ -196,6 +196,19 @@ class BookingByIdView(generics.RetrieveAPIView):
         booking = Booking.objects.get(booking_id=booking_id)
         serializer = self.serializer_class(booking)
         return Response({'success': True, 'message': 'Booking Detail', 'data': serializer.data}, status=status.HTTP_200_OK)
+
+
+class BookingActivasByPersonView(generics.ListAPIView):
+    serializer_class = BookingListSerializer
+
+    def get(self, request, person_id):
+
+        if not person_id:
+            raise ValidationError('Missing required fields')
+
+        bookings = Booking.objects.filter(person_id=person_id, active=True)
+        serializer = self.serializer_class(bookings, many=True)
+        return Response({'success': True, 'message': 'Active Bookings List', 'data': serializer.data}, status=status.HTTP_200_OK)
     
 
 class BookingUpdate(generics.UpdateAPIView):
