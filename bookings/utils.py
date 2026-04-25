@@ -327,7 +327,7 @@ def enviar_correo_confirmacion_reserva_sede(correo_destinatario, sede_reserva, n
         asunto,
         mensaje_html,
         os.getenv('EMAIL_HOST_USER'),
-        [correo_destinatario, submanager_email],
+        [correo_destinatario],
     )
     email.content_subtype = "html"  # Define el contenido como HTML
     try:
