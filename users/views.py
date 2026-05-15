@@ -146,7 +146,7 @@ class UserDetail(generics.RetrieveAPIView):
 
     def get(self, request, user_id):
         try:
-            user = self.queryset.get(user_id=user_id)
+            user = self.queryset.get(id=user_id)
         except People.DoesNotExist:
             raise NotFound({'success': False, 'message': 'User not found'})
 
